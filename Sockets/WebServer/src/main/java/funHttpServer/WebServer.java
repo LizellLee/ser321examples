@@ -250,6 +250,68 @@ class WebServer {
           // amehlhase, 46384989 -> ser316examples
           // amehlhase, 46384989 -> test316
 
+        } else if (request.contains("nameage?")) {
+          // This multiplies two numbers, there is NO error handling, so when
+          // wrong data is given this just crashes
+
+          Map<String, String> query_pairs = new LinkedHashMap<String, String>();
+          if (query_pairs != null && query_pairs.size() == 2) {
+            // extract path parameters
+            query_pairs = splitQuery(request.replace("nameage?", ""));
+
+            // extract required fields from parameters
+            String name = query_pairs.get("name");
+            String age = query_pairs.get("age");
+
+            // do math
+            String nameAge = "Hi! " + name + ", you are " + age + " years old";
+
+            // Generate response
+            builder.append("HTTP/1.1 200 OK\n");
+            builder.append("Content-Type: text/html; charset=utf-8\n");
+            builder.append("\n");
+            builder.append(nameAge);
+          } else {
+            builder.append("HTTP/1.1 400 Bad Request\n");
+            builder.append("Content-Type: text/html; charset=utf-8\n");
+            builder.append("\n");
+            builder.append("Must provide name and age");
+          }
+
+          // TODO: Include error handling here with a correct error code and
+          // a response that makes sense
+
+        } else if (request.contains("compare?")) {
+          // This multiplies two numbers, there is NO error handling, so when
+          // wrong data is given this just crashes
+
+          Map<String, String> query_pairs = new LinkedHashMap<String, String>();
+          if (query_pairs != null && query_pairs.size() == 2) {
+            // extract path parameters
+            query_pairs = splitQuery(request.replace("compare?", ""));
+
+            // extract required fields from parameters
+            Integer num1 = Integer.parseInt(query_pairs.get("num1"));
+            Integer num2 = Integer.parseInt(query_pairs.get("num2"));
+
+            // do math
+            Integer greater = num1 > num2 ? num1 : num2;
+            Integer less = greater == num1 ? num2 : num1;
+
+            // Generate response
+            builder.append("HTTP/1.1 200 OK\n");
+            builder.append("Content-Type: text/html; charset=utf-8\n");
+            builder.append("\n");
+            builder.append(greater + " is greater than " + less);
+          } else {
+            builder.append("HTTP/1.1 400 Bad Request\n");
+            builder.append("Content-Type: text/html; charset=utf-8\n");
+            builder.append("\n");
+            builder.append("Must provide 2 number to compare");
+          }
+
+          // TODO: Include error handling here with a correct error code and
+          // a response that makes sense
         } else {
           // if the request is not recognized at all
 
