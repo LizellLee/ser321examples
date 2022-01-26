@@ -204,9 +204,10 @@ class WebServer {
           System.out.println("query_pairs size = " + query_pairs.size());
           System.out.println(query_pairs);
 
+          // extract path parameters
+          query_pairs = splitQuery(request.replace("multiply?", ""));
+
           if (query_pairs != null && query_pairs.size() == 2) {
-            // extract path parameters
-            query_pairs = splitQuery(request.replace("multiply?", ""));
 
             // extract required fields from parameters
             Integer num1 = Integer.parseInt(query_pairs.get("num1"));
@@ -259,9 +260,11 @@ class WebServer {
           // wrong data is given this just crashes
 
           Map<String, String> query_pairs = new LinkedHashMap<String, String>();
+
+          // extract path parameters
+          query_pairs = splitQuery(request.replace("nameage?", ""));
+
           if (query_pairs != null && query_pairs.size() == 2) {
-            // extract path parameters
-            query_pairs = splitQuery(request.replace("nameage?", ""));
 
             // extract required fields from parameters
             String name = query_pairs.get("name");
@@ -290,10 +293,10 @@ class WebServer {
           // wrong data is given this just crashes
 
           Map<String, String> query_pairs = new LinkedHashMap<String, String>();
-          if (query_pairs != null && query_pairs.size() == 2) {
-            // extract path parameters
-            query_pairs = splitQuery(request.replace("compare?", ""));
+          // extract path parameters
+          query_pairs = splitQuery(request.replace("compare?", ""));
 
+          if (query_pairs != null && query_pairs.size() == 2) {
             // extract required fields from parameters
             Integer num1 = Integer.parseInt(query_pairs.get("num1"));
             Integer num2 = Integer.parseInt(query_pairs.get("num2"));
