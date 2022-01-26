@@ -304,12 +304,16 @@ class WebServer {
             // do math
             Integer greater = num1 > num2 ? num1 : num2;
             Integer less = greater == num1 ? num2 : num1;
+            String result = greater + " is greater than " + less;
+            if (greater == less) {
+              result = greater + " and " + less + " is equal";
+            }
 
             // Generate response
             builder.append("HTTP/1.1 200 OK\n");
             builder.append("Content-Type: text/html; charset=utf-8\n");
             builder.append("\n");
-            builder.append(greater + " is greater than " + less);
+            builder.append(result);
           } else {
             builder.append("HTTP/1.1 400 Bad Request\n");
             builder.append("Content-Type: text/html; charset=utf-8\n");
