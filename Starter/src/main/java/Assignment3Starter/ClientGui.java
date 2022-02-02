@@ -4,9 +4,11 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.io.IOException;
+import java.util.Random;
 
 import javax.swing.JDialog;
 import javax.swing.WindowConstants;
+import javax.swing.plaf.ButtonUI;
 
 /**
  * The ClientGui class is a GUI frontend that displays an image grid, an input text box,
@@ -32,6 +34,13 @@ public class ClientGui implements Assignment3Starter.OutputPanel.EventHandlers {
   JDialog frame;
   PicturePanel picturePanel;
   OutputPanel outputPanel;
+
+  // VARIABLES FOR THE GAME
+  String[] author = {"Captain_America", "Darth_Vader", "Homer_Simpson", "Jack_Sparrow", "Joker", "Tony_Stark", "Wolverine"};
+  int QUOTES_LENGTH = 4;
+  int POINTS = 0;
+  int INCORRECT = 0;
+  String CORRECT_ANS = "";
 
   /**
    * Construct dialog
@@ -96,7 +105,7 @@ public class ClientGui implements Assignment3Starter.OutputPanel.EventHandlers {
       // insert the image
       if (picturePanel.insertImage(filename, row, col)) {
       // put status in output
-        outputPanel.appendOutput("Inserting " + filename + " in position (" + row + ", " + col + ")");
+      //  outputPanel.appendOutput("Inserting " + filename + " in position (" + row + ", " + col + ")");
         return true;
       }
       error = "File(\"" + filename + "\") not found.";
@@ -114,19 +123,77 @@ public class ClientGui implements Assignment3Starter.OutputPanel.EventHandlers {
    * Change this to whatever you need
    */
   @Override
-  public void submitClicked() {
-
+  public void submitClicked(){
     // An example how to update the points in the UI
-    outputPanel.setPoints(10);
+    // outputPanel.setPoints(10);
 
     // Pulls the input box text
     String input = outputPanel.getInputText();
     // if has input
     if (input.length() > 0) {
+      if(input.toUpperCase().equals("QUIT")){
+        System.exit(0);
+      }
+
       // append input to the output panel
-      outputPanel.appendOutput(input);
+      outputPanel.appendOutput("You answered: " + input);
+      
+      if(input.toUpperCase().equals(CORRECT_ANS.toUpperCase())){
+        // points ++
+        POINTS++;
+        outputPanel.setPoints(POINTS);
+        outputPanel.appendOutput("CORRECT!");
+      } else {
+        INCORRECT ++;
+        outputPanel.appendOutput("WRONG!");
+      }
+      
+      outputPanel.appendOutput("The answer is: " + CORRECT_ANS);
+      
       // clear input text box
       outputPanel.setInputText("");
+      
+      if(POINTS >= 3 || INCORRECT >= 3) {
+        if(POINTS >= 3){ 
+          try {
+            render("img/win.jpg");
+          } catch (IOException e) {
+            e.printStackTrace();
+          }
+        } else {
+          try {
+            render("img/lose.jpg");
+          } catch (IOException e) {
+            e.printStackTrace();
+          }
+        }
+
+
+      } else {
+        try {
+          String image = generateRandomImage();
+          render(image);
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      }
+    }
+  }
+
+  public void reset() {
+    // clear input text box
+    outputPanel.setInputText("");
+
+    // Set points back to zero
+    POINTS = 0;
+    outputPanel.setPoints(POINTS);
+
+    newGame(1);
+    String image = generateRandomImage();
+    try {
+      render(image);
+    } catch (Exception e) {
+      e.printStackTrace();
     }
   }
   
@@ -140,23 +207,57 @@ public class ClientGui implements Assignment3Starter.OutputPanel.EventHandlers {
     if (input.equals("surprise")) {
       outputPanel.appendOutput("You found me!");
     }
+    if(input.toUpperCase().equals("PASS")){
+      String image = generateRandomImage();
+      try {
+        render(image);
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+      outputPanel.setInputText("");
+    }
+    if (input.equals("reset")) {
+      reset();
+    }
+  }
+
+  public String generateRandomImage() {
+    Random r = new Random();
+    int authNum = r.nextInt(author.length - 1) + 1;
+    int qNum = r.nextInt(QUOTES_LENGTH - 1) + 1;
+
+    //outputPanel.appendOutput("Random author number: " + authNum);
+    //outputPanel.appendOutput("Random quote number: " + qNum);
+
+    String result = "img/" + author[authNum] + "/quote" + qNum + ".png";
+
+    CORRECT_ANS = author[authNum].replace('_', ' ');
+    // outputPanel.appendOutput("Answer set as: " + CORRECT_ANS);
+
+    return result;
+  }
+
+  public void render(String image) throws IOException{
+    insertImage(image, 0, 0);
+    //outputPanel.appendOutput("Points: " + POINTS);
+    //outputPanel.appendOutput("Incorrect: " + INCORRECT);
+    // show the GUI dialog as modal
+    show(true);
   }
 
   public static void main(String[] args) throws IOException {
     // create the frame
     ClientGui main = new ClientGui();
-
-    
+    main.outputPanel.appendOutput("Type 'pass' to change the quote");
+    main.outputPanel.appendOutput("Type 'quit' to exit the game");
     
     // setup the UI to display on image
     main.newGame(1);
-    
     // add images to the grid
-    main.insertImage("img/Jack_Sparrow/quote4.png", 0, 0);
+    // main.insertImage("img/Jack_Sparrow/quote4.png", 0, 0);
+    String image = main.generateRandomImage();
+    main.insertImage(image, 0, 0);
 
-
-  
-    
     // show the GUI dialog as modal
     main.show(true); // you should not have your logic after this. You main logic should happen whenever "submit" is clicked
   }

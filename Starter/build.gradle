@@ -21,3 +21,39 @@ task Gui(type: JavaExec) {
   main = 'Assignment3Starter.ClientGui'
   standardInput = System.in
 }
+
+task runServer(type: JavaExec) {
+  group 'http'
+  description 'Run the Server'
+
+  classpath = sourceSets.main.runtimeClasspath
+
+  main = 'Assignment3Starter.Server'
+  standardInput = System.in
+
+  if (project.hasProperty("port")) {
+    args(project.getProperty("port"));
+  } else {
+    args("8080");
+  }
+}
+
+task runClient(type: JavaExec) {
+  group 'http'
+  description 'Run the Client'
+
+  classpath = sourceSets.main.runtimeClasspath
+
+  main = 'Assignment3Starter.Client'
+  standardInput = System.in
+
+  if (project.hasProperty("port") && project.hasProperty("host")) {
+    args(project.getProperty("port"), project.getProperty("host"));
+  } else if (project.hasProperty("host")) {
+    args("8080",project.getProperty("host"));
+  } else if (project.hasProperty("port")) {
+    args(project.getProperty("port"), "localhost");
+  } else {
+    args("8080", "localhost");
+  }
+}
